@@ -4,25 +4,30 @@ Backend engineering • C++ • Go • Open Source
 
 I enjoy building backend systems and exploring infrastructure, distributed systems, and open-source software.
 
+## Open source
+
 <!-- PR-DASHBOARD:START -->
-> **Last refreshed:** 2026-10-12 18:38 UTC
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 17 open-source pull requests: 15 merged, 2 open and 0 closed, across 6 repositories with 32.4k combined stars. Merge rate 100%; contributing since Nov 2024."></picture></a>
 
-| 🟢 Merged | 🔵 Open | 🟠 Closed (not merged) | Repositories |
-|:---:|:---:|:---:|:---:|
-| **15** | **2** | **0** | **6** |
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests by repository: boykopovar/AnyPS5 (6), K-Tanish/symptom-assist (4), MasterAffan/OptiFit (3), Galabavamsi/Electron-GNN (2), Galabavamsi/Serenity (1), PlanetRead/Burn-in-subtitle-checker (1)"></picture></a>
 
-### Repository breakdown
+<details>
+<summary><b>Recent pull requests</b> · latest 8 of 17</summary>
+<br>
 
-| Repository | 🟢 Merged | 🔵 Open | 🟠 Closed | Recent pull requests |
-|---|---:|---:|---:|---|
-| [boykopovar/AnyPS5](https://github.com/boykopovar/AnyPS5) | 5 | 1 | 0 | [#4368 fix(conventions): check the whole repository when run from a subdirectory](https://github.com/boykopovar/AnyPS5/pull/4368)<br>[#4665 fix(relinker): write Windows import diagnostics after the image is built](https://github.com/boykopovar/AnyPS5/pull/4665)<br>[#4346 fix(relinker): write registries after the executable](https://github.com/boykopovar/AnyPS5/pull/4346) |
-| [K-Tanish/symptom-assist](https://github.com/K-Tanish/symptom-assist) | 4 | 0 | 0 | [#5 feat(graph): improve readability and add explicit sequential reasonin…](https://github.com/K-Tanish/symptom-assist/pull/5)<br>[#55 feat(ui): add resizable split pane for chat and diagnostics](https://github.com/K-Tanish/symptom-assist/pull/55)<br>[#82 feat: added automate github ci](https://github.com/K-Tanish/symptom-assist/pull/82) |
-| [MasterAffan/OptiFit](https://github.com/MasterAffan/OptiFit) | 3 | 0 | 0 | [#44 feat(form): implement form validation](https://github.com/MasterAffan/OptiFit/pull/44)<br>[#55 feat: Add custom workout creation and management](https://github.com/MasterAffan/OptiFit/pull/55)<br>[#58 fix: black screen issue resolved](https://github.com/MasterAffan/OptiFit/pull/58) |
-| [Galabavamsi/Electron-GNN](https://github.com/Galabavamsi/Electron-GNN) | 2 | 0 | 0 | [#2 added remaining files](https://github.com/Galabavamsi/Electron-GNN/pull/2)<br>[#1 feat: figures improved, added more figures, implemented features isos…](https://github.com/Galabavamsi/Electron-GNN/pull/1) |
-| [Galabavamsi/Serenity](https://github.com/Galabavamsi/Serenity) | 1 | 0 | 0 | [#1 Few changes auto fixes of android studio](https://github.com/Galabavamsi/Serenity/pull/1) |
-| [PlanetRead/Burn-in-subtitle-checker](https://github.com/PlanetRead/Burn-in-subtitle-checker) | 0 | 1 | 0 | [#28 feat(module-2): multi-frame burned-in subtitle extraction with span-a…](https://github.com/PlanetRead/Burn-in-subtitle-checker/pull/28) |
+<table>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/4368"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/4368">fix(conventions): check the whole repository when run from a subdirectory</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#4368 · merged Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/4665"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-open-dark.svg"><img src="assets/pr-dashboard/pr-open-light.svg" width="16" height="16" alt="Open"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/4665">fix(relinker): write Windows import diagnostics after the image is built</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#4665 · opened Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/4346"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/4346">fix(relinker): write registries after the executable</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#4346 · merged Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/4304"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/4304">fix(conventions): report 3rdparty submodules without a .gitmodules entry</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#4304 · merged Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/4289"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/4289">fix(tools): run pr_overlap on gh older than 2.48</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#4289 · merged Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/3850"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/3850">fix(relinker): accept the input&#x27;s directory as a module directory</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#3850 · merged Oct 12</sub></td></tr>
+<tr><td><a href="https://github.com/Galabavamsi/Electron-GNN/pull/2"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/Galabavamsi/Electron-GNN/pull/2">added remaining files</a><br><sub><a href="https://github.com/Galabavamsi/Electron-GNN">Galabavamsi/Electron-GNN</a>#2 · merged May 17</sub></td></tr>
+<tr><td><a href="https://github.com/PlanetRead/Burn-in-subtitle-checker/pull/28"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-open-dark.svg"><img src="assets/pr-dashboard/pr-open-light.svg" width="16" height="16" alt="Open"></picture></a></td><td><a href="https://github.com/PlanetRead/Burn-in-subtitle-checker/pull/28">feat(module-2): multi-frame burned-in subtitle extraction with span-a…</a><br><sub><a href="https://github.com/PlanetRead/Burn-in-subtitle-checker">PlanetRead/Burn-in-subtitle-checker</a>#28 · opened May 14</sub></td></tr>
+</table>
 
-<sub>Counts cover public PRs authored by this account. Recent links are ordered by last update. GitHub Search API returns at most 1,000 results per query.</sub>
+<p><a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL">See all 17 pull requests on GitHub →</a></p>
+</details>
+
+<sub>Updated Oct 12, 2026 · public pull requests to repositories on GitHub, drafts counted as open.</sub>
 <!-- PR-DASHBOARD:END -->
-
-
