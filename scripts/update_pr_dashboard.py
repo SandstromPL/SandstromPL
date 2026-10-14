@@ -116,7 +116,7 @@ def fetch_pull_requests():
 
 
 def fetch_repo_metadata(names):
-    """Stars and language per repository; unreachable repos are skipped."""
+    """Primary language per repository; unreachable repos are skipped."""
     repos = {}
 
     for name in names[:REPO_METADATA_LIMIT]:
@@ -126,10 +126,7 @@ def fetch_repo_metadata(names):
             print(f"Skipping metadata for {name}: {error}", file=sys.stderr)
             continue
 
-        repos[name] = {
-            "stars": repo.get("stargazers_count", 0),
-            "language": repo.get("language"),
-        }
+        repos[name] = {"language": repo.get("language")}
 
     return repos
 
