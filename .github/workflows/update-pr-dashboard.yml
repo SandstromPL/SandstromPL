@@ -3,7 +3,9 @@ name: Update PR dashboard
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 3 * * *" # Daily at 03:17 UTC
+    # GitHub can't notify this repo about PRs in other people's repos, so poll.
+    # Every 5 minutes is GitHub's minimum; runs can be delayed under load.
+    - cron: "*/5 * * * *"
   push:
     paths:
       - "scripts/**"
@@ -36,6 +38,7 @@ jobs:
           git add README.md assets/pr-dashboard
           if ! git diff --cached --quiet; then
             git commit -m "chore: update open-source PR dashboard"
+            git pull --rebase
             git push
           else
             echo "Dashboard is already up to date."
