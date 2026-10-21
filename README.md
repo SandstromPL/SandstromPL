@@ -7,9 +7,9 @@ I enjoy building backend systems and exploring infrastructure, distributed syste
 ## Open source
 
 <!-- PR-DASHBOARD:START -->
-<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 38 open-source pull requests: 32 merged, 4 open and 2 closed, across 7 repositories. Merge rate 94%; contributing since Nov 2024."></picture></a>
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 38 open-source pull requests: 26 merged, 2 open and 2 closed, across 4 repositories. Merge rate 93%; contributing since Aug 2025."></picture></a>
 
-<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests by repository: boykopovar/AnyPS5 (24), K-Tanish/symptom-assist (4), MasterAffan/OptiFit (3), morluto/rea (3), Galabavamsi/Electron-GNN (2), Galabavamsi/Serenity (1), PlanetRead/Burn-in-subtitle-checker (1)"></picture></a>
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests by repository: boykopovar/AnyPS5 (24), MasterAffan/OptiFit (3), Galabavamsi/Electron-GNN (2), PlanetRead/Burn-in-subtitle-checker (1)"></picture></a>
 
 <details>
 <summary><b>Recent pull requests</b> · latest 8 of 38</summary>
@@ -29,5 +29,5 @@ I enjoy building backend systems and exploring infrastructure, distributed syste
 <p><a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL">See all 38 pull requests on GitHub →</a></p>
 </details>
 
-<sub>Public pull requests to other people&#x27;s repositories, drafts counted as open · refreshed automatically when PRs change.</sub>
+<sub>Public pull requests to other people&#x27;s repositories, drafts counted as open · refreshed automatically when PRs change · breakdowns cover the 30 most recent of 38.</sub>
 <!-- PR-DASHBOARD:END -->
