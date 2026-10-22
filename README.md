@@ -7,12 +7,12 @@ I enjoy building backend systems and exploring infrastructure, distributed syste
 ## Open source
 
 <!-- PR-DASHBOARD:START -->
-<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 37 open-source pull requests: 30 merged, 3 open and 3 closed, across 5 repositories. Merge rate 91%; contributing since Aug 2025."></picture></a>
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 41 open-source pull requests: 26 merged, 3 open and 3 closed, across 4 repositories. Merge rate 90%; contributing since Aug 2025."></picture></a>
 
-<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests by repository: boykopovar/AnyPS5 (26), K-Tanish/symptom-assist (4), MasterAffan/OptiFit (3), Galabavamsi/Electron-GNN (2), PlanetRead/Burn-in-subtitle-checker (1)"></picture></a>
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests by repository: boykopovar/AnyPS5 (26), MasterAffan/OptiFit (3), Galabavamsi/Electron-GNN (2), PlanetRead/Burn-in-subtitle-checker (1)"></picture></a>
 
 <details>
-<summary><b>Recent pull requests</b> · latest 8 of 37</summary>
+<summary><b>Recent pull requests</b> · latest 8 of 41</summary>
 <br>
 
 <table>
@@ -26,8 +26,8 @@ I enjoy building backend systems and exploring infrastructure, distributed syste
 <tr><td><a href="https://github.com/boykopovar/AnyPS5/pull/6196"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-merged-dark.svg"><img src="assets/pr-dashboard/pr-merged-light.svg" width="16" height="16" alt="Merged"></picture></a></td><td><a href="https://github.com/boykopovar/AnyPS5/pull/6196">fix(agc): rasterize into one-sample targets as one sample when MSAA_ENABLE is clear</a><br><sub><a href="https://github.com/boykopovar/AnyPS5">boykopovar/AnyPS5</a>#6196 · merged Oct 18</sub></td></tr>
 </table>
 
-<p><a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL">See all 37 pull requests on GitHub →</a></p>
+<p><a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL">See all 41 pull requests on GitHub →</a></p>
 </details>
 
-<sub>Public pull requests to other people&#x27;s repositories, drafts counted as open · refreshed automatically when PRs change · breakdowns cover the 36 most recent of 37.</sub>
+<sub>Public pull requests to other people&#x27;s repositories, drafts counted as open · refreshed automatically when PRs change · breakdowns cover the 32 most recent of 41.</sub>
 <!-- PR-DASHBOARD:END -->
