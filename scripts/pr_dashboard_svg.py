@@ -119,6 +119,9 @@ STATE_LABELS = {"merged": "Merged", "open": "Open",
 WIDTH = 840          # viewBox width; README column is ~830px
 PAD = 24             # inner horizontal padding
 MAX_REPO_ROWS = 8
+# Only well-known repositories get a row and appear in the recent list;
+# every PR still counts toward the summary totals.
+FEATURED_MIN_STARS = 1000
 WEEKS = 52           # activity chart: one bar per week
 RECENT_PRS = 8
 TITLE_CHARS = 90     # recent-PR titles longer than this are shortened
@@ -132,11 +135,19 @@ TITLE_CHARS = 90     # recent-PR titles longer than this are shortened
 class RepoStats:
     full_name: str
     language: "str | None"
+    description: "str | None"
+    stars: int               # used to pick featured repos, never displayed
     counts: Counter = field(default_factory=Counter)
 
     @property
     def total(self):
         return sum(self.counts[s] for s in STATES)
+
+    @property
+    def featured(self):
+        """Well known, and holds at least one merged or open PR."""
+        return (self.stars >= FEATURED_MIN_STARS
+                and (self.counts["merged"] or self.counts["open"]))
 
 
 @dataclass
@@ -146,11 +157,19 @@ class Stats:
     loaded: int             # PRs actually present in data["prs"]
     counts: Counter         # merged / open (incl. drafts) / closed
     repos: list             # [RepoStats], most PRs first
+    featured: list          # the subset of repos worth showcasing
     first: "datetime | None"
     latest: "datetime | None"  # most recent open / merge / close
     weekly: list            # [(week_start, count)] oldest -> newest
     now: datetime
     recent: list            # raw PR dicts, most recent activity first
+
+    @property
+    def featured_recent(self):
+        """Merged and open PRs to featured repos; closed ones aren't showcased."""
+        names = {r.full_name for r in self.featured}
+        return [pr for pr in self.recent
+                if pr["repo"] in names and pr["state"] != "closed"]
 
     @property
     def this_week(self):
@@ -192,7 +211,9 @@ def compute_stats(data):
         name = pr["repo"]
         if name not in repos:
             meta = repo_meta.get(name) or {}
-            repos[name] = RepoStats(name, meta.get("language"))
+            repos[name] = RepoStats(name, meta.get("language"),
+                                    meta.get("description"),
+                                    int(meta.get("stars") or 0))
         repos[name].counts[bucket(pr["state"])] += 1
     ordered = sorted(repos.values(), key=lambda r: (
         -r.total, -r.counts["merged"], r.full_name.lower()))
@@ -212,6 +233,7 @@ def compute_stats(data):
         loaded=len(prs),
         counts=counts,
         repos=ordered,
+        featured=[r for r in ordered if r.featured],
         first=min(created) if created else None,
         latest=parse_time(activity_time(recent[0])) if recent else None,
         weekly=weekly,
@@ -532,8 +554,8 @@ def render_repos(s, theme):
     t = THEMES[theme]
     right = WIDTH - PAD
     header_h, row_h, footer_h = 56, 66, 48
-    shown = s.repos[:MAX_REPO_ROWS]
-    hidden = s.repos[MAX_REPO_ROWS:]
+    shown = s.featured[:MAX_REPO_ROWS]
+    hidden = s.featured[MAX_REPO_ROWS:]
     height = header_h + row_h * len(shown) + (footer_h if hidden else 0)
 
     bar_x, bar_w = 488, 232
@@ -542,7 +564,7 @@ def render_repos(s, theme):
 
     out = [
         icon("repo", PAD, 21, 18, t["muted"]),
-        text(PAD + 28, 36, "Repositories", 17, t["fg"], 600),
+        text(PAD + 28, 36, "Featured repositories", 17, t["fg"], 600),
         text(right, 36, "Pull requests", 14, t["muted"], anchor="end"),
     ]
     for i, repo in enumerate(shown):
@@ -551,11 +573,17 @@ def render_repos(s, theme):
         out.append(f'<path d="M1 {top}H{WIDTH - 1}" stroke="{t["border"]}"/>')
         out.append(text(PAD, line1, repo_name_spans(repo.full_name, name_budget, t), 16, t["fg"]))
 
-        if repo.language:
-            dot = LANGUAGE_COLORS.get(repo.language, t["muted"])
-            out.append(f'<circle{attrs(cx=PAD + 6, cy=line2 - 5, r=6, fill=dot)}/>')
-            lang = truncate(repo.language, name_budget - 18, 14)
-            out.append(text(PAD + 18, line2, xml_escape(lang), 14, t["muted"]))
+        # Meta line: language dot, then "Language · description".
+        meta = " · ".join(" ".join(part.split()) for part in
+                          (repo.language, repo.description) if part)
+        if meta:
+            meta_x = PAD
+            if repo.language:
+                dot = LANGUAGE_COLORS.get(repo.language, t["muted"])
+                out.append(f'<circle{attrs(cx=PAD + 6, cy=line2 - 5, r=6, fill=dot)}/>')
+                meta_x = PAD + 18
+            meta = truncate(meta, name_budget - (meta_x - PAD), 14)
+            out.append(text(meta_x, line2, xml_escape(meta), 14, t["muted"]))
 
         filled = max(8, bar_w * repo.total / peak)
         parts = [(repo.counts[st], t[st]) for st in STATES]
@@ -575,9 +603,9 @@ def render_repos(s, theme):
                                 f"{plural(more_prs, 'request')}", t["muted"]),
                         14, t["muted"]))
 
-    listed = ", ".join(f"{r.full_name} ({r.total})" for r in s.repos)
-    desc = (f"Pull requests by repository, most first: {listed}.")
-    title = f"Repositories {s.login} has contributed to"
+    listed = ", ".join(f"{r.full_name} ({r.total})" for r in s.featured)
+    desc = (f"Pull requests to featured repositories, most first: {listed}.")
+    title = f"Featured repositories {s.login} has contributed to"
     return svg_document(height, title, desc, "".join(out), theme)
 
 # --------------------------------------------------------------------------
@@ -603,7 +631,7 @@ def build_assets(data):
     assets = {}
     for theme in THEMES:
         assets[f"pr-summary-{theme}.svg"] = render_summary(s, theme)
-        if s.repos:
+        if s.featured:
             assets[f"pr-repos-{theme}.svg"] = render_repos(s, theme)
             for state in ("merged", "open", "draft", "closed"):
                 assets[f"pr-{state}-{theme}.svg"] = render_state_icon(state, theme)
@@ -632,7 +660,7 @@ STATE_VERBS = {"merged": "merged", "open": "opened", "draft": "opened",
 def recent_table(s, asset_dir):
     """GitHub-style PR list: state icon | title, then repo#number · date."""
     rows = ["<table>"]
-    for pr in s.recent[:RECENT_PRS]:
+    for pr in s.featured_recent[:RECENT_PRS]:
         state = pr["state"] if pr["state"] in STATE_LABELS else "open"
         url = html_escape(safe_pr_url(pr))
         repo_url = html_escape(f"https://github.com/{pr['repo']}")
@@ -663,18 +691,18 @@ def build_readme_block(data, asset_dir):
         + themed_image(asset_dir, "pr-summary", summary_description(s), width="100%")
         + "</a>"
     ]
-    if s.repos:
-        top = ", ".join(f"{r.full_name} ({r.total})" for r in s.repos[:MAX_REPO_ROWS])
+    if s.featured:
+        top = ", ".join(f"{r.full_name} ({r.total})" for r in s.featured[:MAX_REPO_ROWS])
         blocks.append(
             f'<a href="{search_attr}">'
             + themed_image(asset_dir, "pr-repos",
-                           f"Pull requests by repository: {top}", width="100%")
+                           f"Pull requests to featured repositories: {top}", width="100%")
             + "</a>")
-        shown = min(RECENT_PRS, len(s.recent))
+        shown = min(RECENT_PRS, len(s.featured_recent))
         blocks.append(
             "<details>\n"
-            f"<summary><b>Recent pull requests</b> · latest {shown} of "
-            f"{fmt_int(s.total)}</summary>\n<br>\n\n"
+            f"<summary><b>Recent pull requests</b> · latest {shown} in "
+            "featured repositories</summary>\n<br>\n\n"
             + recent_table(s, asset_dir)
             + f'\n\n<p><a href="{search_attr}">See all {fmt_int(s.total)} '
             f'pull {plural(s.total, "request")} on GitHub →</a></p>\n'
