@@ -3,12 +3,13 @@
 
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 import json
 import os
 import sys
+import time
 
 from pr_dashboard_svg import build_assets, build_readme_block
 
@@ -33,10 +34,26 @@ INCLUDE_OWN_REPOS = os.environ.get("INCLUDE_OWN_REPOS", "").lower() in {
 SEARCH_PAGE_SIZE = 100
 SEARCH_RESULT_CAP = 1000  # The Search API never returns more than this.
 REPO_METADATA_LIMIT = 50  # One REST call per repository; keep it bounded.
+ATTEMPTS = 3              # Tries per API call when GitHub fails transiently.
+
+
+class GitHubError(RuntimeError):
+    """A failed API call; status is None when GitHub could not be reached."""
+
+    def __init__(self, message, status=None):
+        super().__init__(message)
+        self.status = status
+
+    @property
+    def transient(self):
+        return self.status is None or self.status >= 500
 
 
 def github_get(path, params=None):
-    """GET a GitHub REST API path and return the decoded JSON body."""
+    """GET a GitHub REST API path and return the decoded JSON body.
+
+    Server errors and network failures are retried with a short backoff.
+    """
     url = f"{API_ROOT}{path}"
     if params:
         url = f"{url}?{urlencode(params)}"
@@ -50,14 +67,25 @@ def github_get(path, params=None):
     if TOKEN:
         headers["Authorization"] = f"Bearer {TOKEN}"
 
-    try:
-        with urlopen(Request(url, headers=headers), timeout=30) as response:
-            return json.load(response)
-    except HTTPError as error:
-        details = error.read().decode("utf-8", errors="replace")
-        raise RuntimeError(
-            f"GitHub API returned HTTP {error.code} for {path}: {details}"
-        ) from error
+    request = Request(url, headers=headers)
+
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            with urlopen(request, timeout=30) as response:
+                return json.load(response)
+        except HTTPError as error:
+            details = error.read().decode("utf-8", errors="replace")
+            failure = GitHubError(
+                f"GitHub API returned HTTP {error.code} for {path}: {details}",
+                error.code,
+            )
+        except (URLError, TimeoutError) as error:
+            failure = GitHubError(f"Could not reach GitHub for {path}: {error}")
+
+        if not failure.transient or attempt == ATTEMPTS:
+            raise failure
+
+        time.sleep(2 ** attempt)
 
 
 def pr_state(item):
@@ -117,13 +145,17 @@ def fetch_pull_requests():
 
 def fetch_repo_metadata(names):
     """Language, description and stars per repository (stars decide which
-    repositories are featured); unreachable repos are skipped."""
+    repositories are featured); deleted or blocked repos are skipped."""
     repos = {}
 
     for name in names[:REPO_METADATA_LIMIT]:
         try:
             repo = github_get(f"/repos/{quote(name)}")
-        except RuntimeError as error:
+        except GitHubError as error:
+            # Any other failure stops the run, so a passing GitHub outage
+            # can never publish a dashboard with repositories missing.
+            if error.status not in (404, 451):
+                raise
             print(f"Skipping metadata for {name}: {error}", file=sys.stderr)
             continue
 
@@ -192,5 +224,14 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as error:
+        if isinstance(error, GitHubError) and error.transient:
+            # Nothing was written yet, so the last published dashboard stays
+            # up; the next scheduled run tries again.
+            print(
+                "::warning::GitHub was unavailable, so the dashboard was "
+                f"left unchanged: {error}"
+            )
+            sys.exit(0)
+
         print(f"Dashboard update failed: {error}", file=sys.stderr)
         sys.exit(1)
