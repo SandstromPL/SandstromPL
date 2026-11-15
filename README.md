@@ -39,6 +39,13 @@ Merged fixes in projects like rea and AnyPS5, plus 7 pull requests during GirlSc
 <sub>Public pull requests to other people&#x27;s repositories, drafts counted as open · refreshed automatically when PRs change.</sub>
 <!-- PR-DASHBOARD:END -->
 
+## Hackathons
+
+| Hackathon | What I built | Result |
+|---|---|---|
+| **HackerRank Orchestrate**<br><sub>Oct 2026 · 24 hours</sub> | [Deletion-audit agent](https://github.com/SandstromPL/hackerrank-orchestrate-october26-final) for the *Ghost Data Still Exists* challenge: checks whether a person's data was really erased across every record and data flow, with deterministic code making the decisions and a model handling only the judgments parsing can't | 🏅&nbsp;**#135**&nbsp;of&nbsp;4,094<br><sub>top 4%</sub> |
+| **Qloo Agentic Hackathon**<br><sub>Nov 2026</sub> | [itsgiving](https://github.com/SandstromPL/itsgiving): an agent for music-video and short-film directors that turns an audience's taste on Qloo into a pitch deck, with the evidence behind every pick<br><sub>[Live demo](https://itsgiving-two.vercel.app) · [Devpost](https://devpost.com/software/itsgiving)</sub> | Submitted |
+
 ## Projects
 
 | Project | What it does | Built with |
