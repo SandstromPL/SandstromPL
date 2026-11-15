@@ -14,7 +14,7 @@ Deployed and debugged Magma Core, an open-source LTE/5G networking platform, loc
 Merged fixes in projects like rea and AnyPS5, plus 7 pull requests during GirlScript Summer of Code 2025. The stats below update automatically within minutes of each PR.
 
 <!-- PR-DASHBOARD:START -->
-<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 58 open-source pull requests: 49 merged, 5 open and 4 closed, across 10 repositories. Merge rate 92%; contributing since Nov 2024."></picture></a>
+<a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-summary-dark.svg"><img src="assets/pr-dashboard/pr-summary-light.svg" width="100%" alt="SandstromPL has opened 58 open-source pull requests: 50 merged, 4 open and 4 closed, across 10 repositories. Merge rate 93%; contributing since Nov 2024."></picture></a>
 
 <a href="https://github.com/search?type=pullrequests&amp;q=is%3Apr%20is%3Apublic%20author%3ASandstromPL%20-user%3ASandstromPL"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/pr-dashboard/pr-repos-dark.svg"><img src="assets/pr-dashboard/pr-repos-light.svg" width="100%" alt="Pull requests to featured repositories: boykopovar/AnyPS5 (35), morluto/rea (7), meshery/meshery (2), gofr-dev/gofr (2)"></picture></a>
 
