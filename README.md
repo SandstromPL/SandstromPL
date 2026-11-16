@@ -52,7 +52,15 @@ Merged fixes in projects like rea and AnyPS5, plus 7 pull requests during GirlSc
 |---|---|---|
 | [Redis Clone](https://github.com/SandstromPL/OWN-REDIS) | Redis-like server speaking RESP over TCP, with string and hash commands and AOF persistence | Go |
 | [ScaleURL](https://github.com/SandstromPL/url-shortner) | URL shortener with analytics, expiry and rate limiting; cache-aside reads and async click logging | Go, PostgreSQL, Redis, Docker, JWT |
-| [Warehouse Robot Simulator](https://github.com/SandstromPL/Multi-Agent-Warehouse-Robot-Simulator) | 25+ robots planning live paths with A*, BFS, CSP, Minimax and hill climbing | Python |
+
+## Academic projects
+
+| Project | What it does | Built with |
+|---|---|---|
+| [Electron-GNN](https://github.com/Galabavamsi/Electron-GNN)<br><sub>UGQ301<br>Interdisciplinary Project<br>Sem 6 · Winter 2025–26</sub> | Predicts molecular absorption spectra from geometry with graph neural networks, trained on peaks extracted from RT-TDDFT simulations | Python, PyTorch |
+| [Pollination Network Analysis](https://github.com/agastya-nath123/Network_Science_Project)<br><sub>CSL601<br>Network Science<br>Sem 6 · Winter 2025–26</sub> | Studies plant–pollinator networks from ecosystems worldwide for structure, robustness and extinction dynamics, and classifies species' roles with a GNN | Python |
+| [Warehouse Robot Simulator](https://github.com/SandstromPL/Multi-Agent-Warehouse-Robot-Simulator)<br><sub>CSL304<br>Artificial Intelligence<br>Sem 5 · Monsoon 2025–26</sub> | 25+ robots planning live paths with A*, BFS, CSP, Minimax and hill climbing | Python |
+| [Object-Oriented Language Compiler](https://github.com/SandstromPL/Compiler-Design-CSL302)<br><sub>CSL302<br>Compiler Design<br>Sem 5 · Monsoon 2025–26</sub> | Compiler front end for a C++/Java-like language: lexer, parser with precedence rules, a hashed symbol table for scope checks, and three-address code generation | C, Flex, Bison |
 
 ## Tech
 
