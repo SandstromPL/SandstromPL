@@ -50,6 +50,7 @@ Merged fixes in projects like rea and AnyPS5, plus 7 pull requests during GirlSc
 
 | Project | What it does | Built with |
 |---|---|---|
+| [whyreach](https://github.com/SandstromPL/whyreach) | Read-only Docker networking diagnosis for Linux: explains why one container can't reach another or the host, with the evidence and the fix. Ships as a CLI and an MCP server for AI coding agents | Go, Docker, MCP |
 | [Redis Clone](https://github.com/SandstromPL/OWN-REDIS) | Redis-like server speaking RESP over TCP, with string and hash commands and AOF persistence | Go |
 | [ScaleURL](https://github.com/SandstromPL/url-shortner) | URL shortener with analytics, expiry and rate limiting; cache-aside reads and async click logging | Go, PostgreSQL, Redis, Docker, JWT |
 
@@ -69,4 +70,4 @@ Merged fixes in projects like rea and AnyPS5, plus 7 pull requests during GirlSc
 **Databases:** PostgreSQL · MongoDB · Redis  
 **Tools:** Linux · Docker · Git · GitHub Actions · Bash
 
-🎬 Off the keyboard I act and make films: 1st place in Film Making and Stage Play at Anveshan 2026.
+🎬 Off the keyboard I act and make films ([portfolio](https://cinephilia-portfolio.vercel.app/)): 1st place in Film Making and Stage Play at Anveshan 2026, and 9th in Film Making at Inter IIT Cultural Meet 8.0, representing IIT Bhilai as an actor.
