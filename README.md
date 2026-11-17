@@ -48,7 +48,7 @@ Merged fixes in projects like rea, AnyPS5 and Meshery, plus 7 pull requests duri
 
 | Project | What it does | Built with |
 |---|---|---|
-| [whyreach](https://github.com/SandstromPL/whyreach)<br><sub>[MCP server on Mcprush](https://mcprush.com/sandstrompl/whyreach-mcp)</sub> | Read-only Docker networking diagnosis for Linux: explains why one container can't reach another or the host, with the evidence and the fix. Ships as a CLI and an MCP server for AI coding agents | Go, Docker, MCP |
+| [whyreach](https://github.com/SandstromPL/whyreach) | Read-only Docker networking diagnosis for Linux: explains why one container can't reach another or the host, with the evidence and the fix. Ships as a CLI and an MCP server for AI coding agents<br><sub>[MCP server on Mcprush](https://mcprush.com/sandstrompl/whyreach-mcp)</sub> | Go, Docker, MCP |
 | [Redis Clone](https://github.com/SandstromPL/OWN-REDIS) | Redis-like server speaking RESP over TCP, with string and hash commands and AOF persistence | Go |
 | [ScaleURL](https://github.com/SandstromPL/url-shortner) | URL shortener with analytics, expiry and rate limiting; cache-aside reads and async click logging | Go, PostgreSQL, Redis, Docker, JWT |
 
