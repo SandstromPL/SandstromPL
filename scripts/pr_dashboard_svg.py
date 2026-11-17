@@ -11,7 +11,7 @@ they render correctly when GitHub embeds them through <img>.
 
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from html import escape as html_escape
 from urllib.parse import quote
 from xml.sax.saxutils import escape as xml_escape, quoteattr
@@ -119,10 +119,9 @@ STATE_LABELS = {"merged": "Merged", "open": "Open",
 WIDTH = 840          # viewBox width; README column is ~830px
 PAD = 24             # inner horizontal padding
 MAX_REPO_ROWS = 8
-# Only well-known repositories get a row and appear in the recent list;
-# every PR still counts toward the summary totals.
+# Only well-known repositories are shown; PRs to small, personal or
+# academic repositories stay off the dashboard.
 FEATURED_MIN_STARS = 1000
-WEEKS = 52           # activity chart: one bar per week
 RECENT_PRS = 8
 TITLE_CHARS = 90     # recent-PR titles longer than this are shortened
 
@@ -153,32 +152,22 @@ class RepoStats:
 @dataclass
 class Stats:
     login: str
-    total: int              # headline number (GitHub search total)
+    total: int              # every public PR found (GitHub search total)
     loaded: int             # PRs actually present in data["prs"]
-    counts: Counter         # merged / open (incl. drafts) / closed
-    repos: list             # [RepoStats], most PRs first
-    featured: list          # the subset of repos worth showcasing
-    first: "datetime | None"
-    latest: "datetime | None"  # most recent open / merge / close
-    weekly: list            # [(week_start, count)] oldest -> newest
+    featured: list          # [RepoStats] worth showcasing, most PRs first
+    highlights: list        # merged/open PRs to featured repos, newest first
     now: datetime
-    recent: list            # raw PR dicts, most recent activity first
 
     @property
-    def featured_recent(self):
-        """Merged and open PRs to featured repos; closed ones aren't showcased."""
-        names = {r.full_name for r in self.featured}
-        return [pr for pr in self.recent
-                if pr["repo"] in names and pr["state"] != "closed"]
+    def latest(self):
+        """When a featured PR was last opened or merged."""
+        if not self.highlights:
+            return None
+        return parse_time(activity_time(self.highlights[0]))
 
     @property
-    def this_week(self):
-        return self.weekly[-1][1]
-
-    @property
-    def merge_rate(self):
-        decided = self.counts["merged"] + self.counts["closed"]
-        return None if decided == 0 else self.counts["merged"] / decided
+    def featured_prs(self):
+        return sum(r.total for r in self.featured)
 
 
 def parse_time(value):
@@ -195,17 +184,10 @@ def activity_time(pr):
     return pr.get("merged_at") or pr.get("closed_at") or pr["created_at"]
 
 
-def week_start(dt):
-    """Midnight on the Monday of dt's week."""
-    return datetime(dt.year, dt.month, dt.day) - timedelta(days=dt.weekday())
-
-
 def compute_stats(data):
     prs = data.get("prs") or []
     repo_meta = data.get("repos") or {}
-    now = parse_time(data["generated_at"])
 
-    counts = Counter(bucket(pr["state"]) for pr in prs)
     repos = {}
     for pr in prs:
         name = pr["repo"]
@@ -215,30 +197,25 @@ def compute_stats(data):
                                     meta.get("description"),
                                     int(meta.get("stars") or 0))
         repos[name].counts[bucket(pr["state"])] += 1
-    ordered = sorted(repos.values(), key=lambda r: (
+
+    featured = sorted((r for r in repos.values() if r.featured), key=lambda r: (
         -r.total, -r.counts["merged"], r.full_name.lower()))
+    names = {r.full_name for r in featured}
 
-    created = [parse_time(pr["created_at"]) for pr in prs]
-    per_week = Counter(week_start(t) for t in created)
-    current = week_start(now)
-    weekly = [(start, per_week[start]) for start in
-              (current - timedelta(weeks=i) for i in range(WEEKS - 1, -1, -1))]
-
-    recent = sorted(prs, key=lambda pr: (activity_time(pr), pr["repo"],
-                                         pr["number"]), reverse=True)
+    # Closed-without-merge PRs still count in their repo's row, but they
+    # aren't showcased in the recent list.
+    highlights = sorted(
+        (pr for pr in prs if pr["repo"] in names and pr["state"] != "closed"),
+        key=lambda pr: (activity_time(pr), pr["repo"], pr["number"]),
+        reverse=True)
 
     return Stats(
         login=data["user"]["login"],
         total=max(int(data.get("total_count") or 0), len(prs)),
         loaded=len(prs),
-        counts=counts,
-        repos=ordered,
-        featured=[r for r in ordered if r.featured],
-        first=min(created) if created else None,
-        latest=parse_time(activity_time(recent[0])) if recent else None,
-        weekly=weekly,
-        now=now,
-        recent=recent,
+        featured=featured,
+        highlights=highlights,
+        now=parse_time(data["generated_at"]),
     )
 
 # --------------------------------------------------------------------------
@@ -248,14 +225,6 @@ def compute_stats(data):
 
 def fmt_int(n):
     return f"{n:,}"
-
-
-def fmt_rate(rate):
-    return "—" if rate is None else f"{rate * 100:.0f}%"
-
-
-def fmt_month(dt):
-    return dt.strftime("%b %Y") if dt else "—"
 
 
 def fmt_day(dt, now):
@@ -393,47 +362,8 @@ def svg_document(height, title, desc, body, theme):
     )
 
 # --------------------------------------------------------------------------
-# Visual 1: summary card
+# Live indicator (featured card header)
 # --------------------------------------------------------------------------
-
-
-def summary_description(s):
-    if s.total == 0:
-        return f"{s.login} has no public open-source pull requests yet."
-    c = s.counts
-    return (f"{s.login} has opened {fmt_int(s.total)} open-source pull "
-            f"{plural(s.total, 'request')}: {fmt_int(c['merged'])} merged, "
-            f"{fmt_int(c['open'])} open and {fmt_int(c['closed'])} closed, "
-            f"across {fmt_int(len(s.repos))} "
-            f"{plural(len(s.repos), 'repository', 'repositories')}. Merge rate "
-            f"{fmt_rate(s.merge_rate)}; contributing since "
-            f"{fmt_month(s.first)}.")
-
-
-def render_activity(s, t, x0, x1, base_y):
-    """One column per week of PRs opened over the last year."""
-    gap, max_h = 2, 40
-    bar_w = (x1 - x0 - gap * (WEEKS - 1)) / WEEKS
-    peak = max(count for _, count in s.weekly)
-    year_total = sum(count for _, count in s.weekly)
-
-    out = [
-        text(x0, base_y - max_h - 14, "Last 12 months", 14, t["muted"]),
-        text(x1, base_y - max_h - 14,
-             tspan(fmt_int(year_total), t["fg"], 600)
-             + tspan(" " + plural(year_total, "PR"), t["muted"]),
-             14, t["muted"], anchor="end"),
-    ]
-    for i, (_, count) in enumerate(s.weekly):
-        x = fmt_num(x0 + i * (bar_w + gap))
-        if count:
-            h = max(4, round(max_h * count / peak))
-            out.append(f'<rect{attrs(x=x, y=base_y - h, width=fmt_num(bar_w), height=h, rx=1, fill=t["accent"])}/>')
-        else:
-            out.append(f'<rect{attrs(x=x, y=base_y - 2, width=fmt_num(bar_w), height=2, rx=1, fill=t["track"])}/>')
-    out.append(text(x0, base_y + 22, s.weekly[0][0].strftime("%b %Y"), 13, t["muted"]))
-    out.append(text(x1, base_y + 22, "This week", 13, t["muted"], anchor="end"))
-    return "".join(out)
 
 
 def render_live_status(s, t, right, y):
@@ -453,70 +383,8 @@ def render_live_status(s, t, right, y):
     )
 
 
-def render_summary(s, theme):
-    t = THEMES[theme]
-    height = 328
-    right = WIDTH - PAD
-    out = []
-
-    # Header
-    out.append(icon("pr", PAD, 23, 18, t["muted"]))
-    out.append(text(PAD + 28, 38, "Open-source contributions", 17, t["fg"], 600))
-    out.append(render_live_status(s, t, right, 38))
-
-    # Headline number, label flows after it in the same <text> element
-    out.append(text(PAD - 2, 132,
-                    tspan(fmt_int(s.total), t["fg"], 600, 64)
-                    + tspan(" " + plural(s.total, "pull request"), t["muted"], 400, 22, dx=4),
-                    64, t["fg"]))
-    if s.this_week:
-        out.append(text(PAD, 164, tspan(f"+{fmt_int(s.this_week)}", t["open"], 600)
-                        + tspan(" this week", t["muted"]), 15, t["muted"]))
-    out.append(render_activity(s, t, 420, right, 132))
-
-    # State bar + legend
-    bar_y, legend_y = 188, 220
-    parts = [(s.counts[st], t[st]) for st in STATES]
-    out.append(segmented_bar(PAD, bar_y, right - PAD, 10, parts,
-                             (t["track"], right - PAD), clip_id="state-bar"))
-    if s.loaded:
-        for i, st in enumerate(STATES):
-            x = PAD + i * 150
-            out.append(f'<circle{attrs(cx=x + 5, cy=legend_y - 5, r=5, fill=t[st])}/>')
-            out.append(text(x + 17, legend_y,
-                            tspan(STATE_LABELS[st], t["fg"], 600)
-                            + tspan(" " + fmt_int(s.counts[st]), t["muted"]),
-                            14, t["fg"]))
-        if s.loaded < s.total:
-            out.append(text(right, legend_y,
-                            f"Breakdown of the latest {fmt_int(s.loaded)}",
-                            13, t["muted"], anchor="end"))
-    else:
-        out.append(text(PAD, legend_y,
-                        "No public pull requests yet — they will appear "
-                        "here automatically.", 14, t["muted"]))
-
-    # Footer stats on a subtle band
-    band_y = 246
-    out.append(f'<path d="M1 {band_y}H{WIDTH - 1}V{height - 7}a6 6 0 0 1-6 6'
-               f'H7a6 6 0 0 1-6-6Z" fill="{t["subtle"]}"/>')
-    out.append(f'<path d="M1 {band_y}H{WIDTH - 1}" stroke="{t["border"]}"/>')
-    stats = [
-        ("Repositories", fmt_int(len(s.repos))),
-        ("Merge rate", fmt_rate(s.merge_rate)),
-        ("Contributing since", fmt_month(s.first)),
-    ]
-    col = (WIDTH - 2 * PAD) / len(stats)
-    for i, (label, value) in enumerate(stats):
-        x = round(PAD + i * col)
-        out.append(text(x, band_y + 32, label, 14, t["muted"]))
-        out.append(text(x, band_y + 66, xml_escape(value), 26, t["fg"], 600))
-
-    title = f"Open-source contributions by {s.login}"
-    return svg_document(height, title, summary_description(s), "".join(out), theme)
-
 # --------------------------------------------------------------------------
-# Visual 2: repository breakdown
+# Visual 1: featured repositories
 # --------------------------------------------------------------------------
 
 
@@ -565,7 +433,7 @@ def render_repos(s, theme):
     out = [
         icon("repo", PAD, 21, 18, t["muted"]),
         text(PAD + 28, 36, "Featured repositories", 17, t["fg"], 600),
-        text(right, 36, "Pull requests", 14, t["muted"], anchor="end"),
+        render_live_status(s, t, right, 36),
     ]
     for i, repo in enumerate(shown):
         top = header_h + i * row_h
@@ -609,7 +477,7 @@ def render_repos(s, theme):
     return svg_document(height, title, desc, "".join(out), theme)
 
 # --------------------------------------------------------------------------
-# Visual 3: PR state icons for the HTML list
+# Visual 2: PR state icons for the HTML list
 # --------------------------------------------------------------------------
 
 
@@ -630,7 +498,6 @@ def build_assets(data):
     s = compute_stats(data)
     assets = {}
     for theme in THEMES:
-        assets[f"pr-summary-{theme}.svg"] = render_summary(s, theme)
         if s.featured:
             assets[f"pr-repos-{theme}.svg"] = render_repos(s, theme)
             for state in ("merged", "open", "draft", "closed"):
@@ -660,7 +527,7 @@ STATE_VERBS = {"merged": "merged", "open": "opened", "draft": "opened",
 def recent_table(s, asset_dir):
     """GitHub-style PR list: state icon | title, then repo#number · date."""
     rows = ["<table>"]
-    for pr in s.featured_recent[:RECENT_PRS]:
+    for pr in s.highlights[:RECENT_PRS]:
         state = pr["state"] if pr["state"] in STATE_LABELS else "open"
         url = html_escape(safe_pr_url(pr))
         repo_url = html_escape(f"https://github.com/{pr['repo']}")
@@ -680,38 +547,41 @@ def recent_table(s, asset_dir):
     return "\n".join(rows)
 
 
+def featured_search_url(s):
+    """GitHub search for this author's PRs to the featured repositories."""
+    repos = " ".join(f"repo:{r.full_name}" for r in s.featured)
+    return ("https://github.com/search?type=pullrequests&q="
+            + quote(f"is:pr author:{s.login} {repos}"))
+
+
 def build_readme_block(data, asset_dir):
     s = compute_stats(data)
-    search = ("https://github.com/search?type=pullrequests&q="
-              + quote(f"is:pr is:public author:{s.login} -user:{s.login}"))
-    search_attr = html_escape(search)
+    if not s.featured:
+        return ("<sub>No pull requests to well-known repositories yet; they "
+                "will appear here automatically.</sub>\n")
 
+    search_attr = html_escape(featured_search_url(s))
+    top = ", ".join(f"{r.full_name} ({r.total})" for r in s.featured[:MAX_REPO_ROWS])
+    shown = min(RECENT_PRS, len(s.highlights))
     blocks = [
         f'<a href="{search_attr}">'
-        + themed_image(asset_dir, "pr-summary", summary_description(s), width="100%")
-        + "</a>"
+        + themed_image(asset_dir, "pr-repos",
+                       f"Pull requests to featured repositories: {top}", width="100%")
+        + "</a>",
+        "<details>\n"
+        f"<summary><b>Recent pull requests</b> · latest {shown}</summary>\n<br>\n\n"
+        + recent_table(s, asset_dir)
+        + f'\n\n<p><a href="{search_attr}">See all {fmt_int(s.featured_prs)} '
+        f'pull {plural(s.featured_prs, "request")} to these repositories '
+        "on GitHub →</a></p>\n"
+        "</details>",
     ]
-    if s.featured:
-        top = ", ".join(f"{r.full_name} ({r.total})" for r in s.featured[:MAX_REPO_ROWS])
-        blocks.append(
-            f'<a href="{search_attr}">'
-            + themed_image(asset_dir, "pr-repos",
-                           f"Pull requests to featured repositories: {top}", width="100%")
-            + "</a>")
-        shown = min(RECENT_PRS, len(s.featured_recent))
-        blocks.append(
-            "<details>\n"
-            f"<summary><b>Recent pull requests</b> · latest {shown} in "
-            "featured repositories</summary>\n<br>\n\n"
-            + recent_table(s, asset_dir)
-            + f'\n\n<p><a href="{search_attr}">See all {fmt_int(s.total)} '
-            f'pull {plural(s.total, "request")} on GitHub →</a></p>\n'
-            "</details>")
 
-    note = ("Public pull requests to other people's repositories, drafts "
-            "counted as open · refreshed automatically when PRs change")
+    note = (f"Featured: repositories with {fmt_int(FEATURED_MIN_STARS)}+ "
+            "stars · drafts counted as open · refreshed automatically when "
+            "PRs change")
     if s.loaded < s.total:
-        note += (f" · breakdowns cover the {fmt_int(s.loaded)} most "
-                 f"recent of {fmt_int(s.total)}")
+        note += (f" · counts cover the {fmt_int(s.loaded)} most recent of "
+                 f"{fmt_int(s.total)} public pull requests")
     blocks.append(f"<sub>{html_escape(note)}.</sub>")
     return "\n\n".join(blocks) + "\n"
